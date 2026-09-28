@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AltisGuardian</title>
+
+    <link rel="stylesheet" href="style.css?v=R11-CENTERED-BRANDING">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- Authentication Gate -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <div class="login-brand"><img src="assets/altisguardian-logo.png" alt="AltisGuardian logo"></div>
+            <h2>AltisGuardian</h2>
+            <p>Built To Adapt | Designed To Protect</p>
+
+            <form id="loginForm">
+                <label>Username</label>
+                <input id="loginUsername" class="form-input" autocomplete="username" required>
+
+                <label>Password</label>
+                <div class="password-field"><input id="loginPassword" class="form-input" type="password" autocomplete="current-password" required><button type="button" class="password-toggle" id="passwordToggle">Show</button></div>
+
+                <button class="primary-button login-submit" type="submit">Sign In</button>
+                <div id="loginError" class="login-error"></div>
+            </form>
+        </div>
+    </div>
+
+
+<div class="app-shell">
+
+    <!-- =========================================================
+         SIDEBAR
+    ========================================================== -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-mark"><img src="assets/altisguardian-logo.png" alt="AltisGuardian logo"></div>
+
+            <div class="brand-info">
+                <div class="brand-name">AltisGuardian</div>
+                <div class="brand-subtitle">Built To Adapt | Designed To Protect</div>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">MONITORING</div>
+
+            <div class="nav-item active" data-view="dashboard">
+                <span class="nav-icon">⌂</span>
+                <span class="nav-label">Dashboard</span>
+            </div>
+
+            <div class="nav-item" data-view="hosts">
+                <span class="nav-icon">▣</span>
+                <span class="nav-label">Hosts</span>
+            </div>
+
+            <div class="nav-item" data-view="alerts">
+                <span class="nav-icon">!</span>
+                <span class="nav-label" id="alertsNavLabel">Alerts</span>
+            </div>
+
+            <div class="nav-item" data-view="history">
+                <span class="nav-icon">◷</span>
+                <span class="nav-label">History</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">CONFIGURATION</div>
+
+            <div class="nav-item" data-view="pcb-profiles">
+                <span class="nav-icon">▤</span>
+                <span class="nav-label">PCB Profiles</span>
+            </div>
+
+            <div class="nav-item" data-view="guardian">
+                <span class="nav-icon">◇</span>
+                <span class="nav-label">Guardian</span>
+            </div>
+
+            <div class="nav-item" data-view="settings">
+                <span class="nav-icon">⚙</span>
+                <span class="nav-label">Settings</span>
+            </div>
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <div class="system-status">
+                <span class="status-dot online"></span>
+
+                <div>
+                    <div class="system-status-title">System Online</div>
+                    <div class="system-status-text">Guardian network connected</div>
+                </div>
+            </div>
+
+            <div class="user-card">
+                <div class="user-avatar" id="currentUserAvatar">OP</div>
+
+                <div class="user-info">
+                    <div class="user-name" id="currentUserName">Operator</div>
+                    <div class="user-role" id="currentUserRole">Operator Account</div>
+                </div>
+
+                <button class="logout-button" id="logoutButton" title="Logout">↪</button>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================================================
+         MAIN APPLICATION
+    ========================================================== -->
+    <main class="main-area">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <div class="topbar-branding">
+                <button id="topbarSidebarToggle" class="topbar-sidebar-toggle" title="Toggle side navbar" aria-label="Toggle side navbar">☰</button>
+                <img class="topbar-logo" src="assets/altisguardian-logo.png" alt="AltisGuardian logo">
+                <div>
+                    <h1 id="pageTitle">Dashboard</h1>
+                <p id="pageSubtitle">System overview and connected Guardian devices</p>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+
+                <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode">
+                    <span class="theme-toggle-icon" id="themeToggleIcon">☼</span>
+                    <span id="themeToggleLabel">Light</span>
+                </button>
+
+                <div class="connection-indicator">
+                    <span class="status-dot online"></span>
+                    <span>Backend Connected</span>
+                </div>
+
+                <div class="topbar-time" id="currentTime">
+                    --:--:--
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+             DASHBOARD VIEW
+        ====================================================== -->
+        <section class="content" id="dashboardView">
+
+            <div class="welcome-row">
+                <div>
+                    <h2>Guardian Overview</h2>
+                    <p>Monitor the health and protection state of connected host systems.</p>
+                </div>
+
+                <div class="last-update">
+                    Last update:
+                    <strong id="lastUpdate">--</strong>
+                </div>
+            </div>
+
+
+            <!-- ENVIRONMENT + HALL EFFECT -->
+            <div class="dashboard-sensor-grid">
+                <div class="panel sensor-panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>Environmental Sensing</h3>
+                            <p>Guardian-connected environmental measurements · <span id="dashboardSensorHost">--</span></p>
+                        </div>
+                        <span class="sensor-source-badge">SENSORS</span>
+                    </div>
+                    <div class="sensor-metric-grid">
+                        <div class="sensor-metric"><span>Altitude</span><strong id="dashboardAltitude">--</strong><small>km</small></div>
+                        <div class="sensor-metric"><span>Pressure</span><strong id="dashboardPressure">--</strong><small>hPa</small></div>
+                        <div class="sensor-metric"><span>Ambient Temperature</span><strong id="dashboardAmbientTemp">--</strong><small>°C</small></div>
+                        <div class="sensor-metric"><span>UV Index</span><strong id="dashboardUvIndex">--</strong><small>index</small></div>
+                    </div>
+                </div>
+
+                <div class="panel sensor-panel hall-panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>Hall Effect Sensor</h3>
+                            <p>Magnetic/current sensing channel</p>
+                        </div>
+                        <span class="sensor-source-badge">LIVE</span>
+                    </div>
+                    <div class="sensor-metric-grid hall-grid">
+                        <div class="sensor-metric"><span>Magnetic Field</span><strong id="dashboardHallField">--</strong><small>mT</small></div>
+                        <div class="sensor-metric"><span>Current Channel</span><strong id="dashboardHallCurrent">--</strong><small>A</small></div>
+                        <div class="sensor-metric"><span>Sensor State</span><strong id="dashboardHallState">NORMAL</strong><small>status</small></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STAT CARDS -->
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Connected Hosts</span>
+                        <span class="stat-icon">▣</span>
+                    </div>
+
+                    <div class="stat-value" id="statHosts">0</div>
+                    <div class="stat-description">Registered host systems</div>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Healthy</span>
+                        <span class="stat-icon healthy-icon">✓</span>
+                    </div>
+
+                    <div class="stat-value" id="statHealthy">0</div>
+                    <div class="stat-description">Operating within limits</div>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Warnings</span>
+                        <span class="stat-icon warning-icon">!</span>
+                    </div>
+
+                    <div class="stat-value" id="statWarnings">0</div>
+                    <div class="stat-description">Requires attention</div>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Critical</span>
+                        <span class="stat-icon critical-icon">×</span>
+                    </div>
+
+                    <div class="stat-value" id="statCritical">0</div>
+                    <div class="stat-description">Protection condition</div>
+                </div>
+
+            </div>
+
+
+            <!-- HOST SECTION -->
+            <div class="section-heading">
+                <div>
+                    <h2>Connected Hosts</h2>
+                    <p>Guardian-protected host systems</p>
+                </div>
+            </div>
+
+            <div class="hosts-grid" id="hostsGrid"></div>
+
+        </section>
+
+
+        <!-- =====================================================
+             HOST DETAILS VIEW
+        ====================================================== -->
+        <section class="content" id="hostDetailsView" style="display:none;">
+
+            <button class="back-button" id="backToDashboard">
+                ← Back to Dashboard
+            </button>
+
+            <div class="host-detail-header">
+
+                <div>
+                    <div class="host-title-row">
+                        <h2 id="detailHostName">Host</h2>
+                        <span class="status-badge healthy" id="detailHostStatus">HEALTHY</span>
+                    </div>
+
+                    <p id="detailHostMeta">Host information</p>
+                </div>
+
+                <div class="host-id-display" id="detailHostId">HOST-000</div>
+
+            </div>
+
+
+<!-- TELEMETRY -->
+                <div class="panel telemetry-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>Current Telemetry</h3>
+                            <p>Latest Guardian measurements</p>
+                        </div>
+
+                        <span class="live-indicator">
+                            <span class="status-dot online"></span>
+                            LIVE
+                        </span>
+
+                    </div>
+
+                    <div class="telemetry-grid">
+
+                        <div class="telemetry-card">
+                            <span>Voltage</span>
+                            <strong id="telemetryVoltage">--</strong>
+                            <small>V</small>
+                        </div>
+
+                        <div class="telemetry-card">
+                            <span>Current</span>
+                            <strong id="telemetryCurrent">--</strong>
+                            <small>A</small>
+                        </div>
+
+                        <div class="telemetry-card">
+                            <span>Power</span>
+                            <strong id="telemetryPower">--</strong>
+                            <small>W</small>
+                        </div>
+
+                        <div class="telemetry-card">
+                            <span>Temperature</span>
+                            <strong id="telemetryTemperature">--</strong>
+                            <small>°C</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                
+
+            <div class="detail-grid">
+
+                <!-- HOST PROTECTION CONFIGURATION -->
+                <div class="panel host-protection-config-panel" id="hostProtectionConfigPanel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>Host Protection Configuration</h3>
+                            <p>Limits requested by the user and validated by the local Guardian</p>
+                        </div>
+                        <span class="config-validation-badge" id="configValidationBadge">GUARDIAN VALIDATED</span>
+                    </div>
+
+                    <div id="hostProtectionConfigContent">
+                        <div class="config-loading">Loading Guardian configuration…</div>
+                    </div>
+                </div>
+
+                <!-- GUARDIAN STATUS -->
+                <div class="panel guardian-status-panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Guardian Status</h3>
+                            <p>Local protection authority</p>
+                        </div>
+
+                        <span class="status-badge healthy" id="guardianStateBadge">ONLINE</span>
+                    </div>
+
+                    <div class="guardian-status-body">
+
+                        <div class="guardian-main-state">
+                            <div class="guardian-symbol">◇</div>
+
+                            <div>
+                                <strong id="guardianStateText">Guardian Active</strong>
+                                <span id="guardianStateDescription">
+                                    Autonomous protection is operating normally.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="guardian-metrics">
+
+                            <div>
+                                <span>Control Cycle</span>
+                                <strong id="guardianCycle">30 s</strong>
+                            </div>
+
+                            <div>
+                                <span>Last Cycle</span>
+                                <strong id="guardianLastCycle">--</strong>
+                            </div>
+
+                            <div>
+                                <span>Protection</span>
+                                <strong id="guardianProtection">ACTIVE</strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PERFORMANCE CONTROL -->
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Performance Control</h3>
+                            <p>Request operating mode</p>
+                        </div>
+
+                        <span class="remote-label">REMOTE</span>
+                    </div>
+
+                    <div class="mode-grid">
+
+                        <button class="mode-button" data-mode="SAFE">
+                            <strong>SAFE</strong>
+                            <span>Maximum protection</span>
+                        </button>
+
+                        <button class="mode-button active" data-mode="NOMINAL">
+                            <strong>NOMINAL</strong>
+                            <span>Balanced operation</span>
+                        </button>
+
+                        <button class="mode-button" data-mode="HIGH">
+                            <strong>HIGH</strong>
+                            <span>Maximum performance</span>
+                        </button>
+
+                    </div>
+
+                    <div class="control-note">
+                        Remote requests are validated by the Guardian.
+                        The web application cannot bypass local protection.
+                    </div>
+
+                </div>
+
+
+                <!-- CONNECTION -->
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Connection</h3>
+                            <p>Communication status</p>
+                        </div>
+
+                        <span class="status-badge healthy">CONNECTED</span>
+                    </div>
+
+                    <div class="connection-list">
+
+                        <div>
+                            <span>Guardian</span>
+                            <strong id="connectionGuardian">Connected</strong>
+                        </div>
+
+                        <div>
+                            <span>Backend</span>
+                            <strong>Connected</strong>
+                        </div>
+
+                        <div>
+                            <span>Last telemetry</span>
+                            <strong id="connectionTelemetry">--</strong>
+                        </div>
+
+                        <div>
+                            <span>Signal</span>
+                            <strong id="connectionSignal">Excellent</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+            <!-- VOLTAGE GRAPH --><!-- VOLTAGE GRAPH -->
+                <div class="panel chart-panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Voltage History</h3>
+                            <p>Recent telemetry samples</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="voltageChart"></canvas>
+                    </div>
+
+                </div>
+
+
+                <!-- POWER GRAPH -->
+                <div class="panel chart-panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Power History</h3>
+                            <p>Recent power consumption</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="powerChart"></canvas>
+                    </div>
+
+                </div>
+
+
+                <!-- TEMPERATURE GRAPH -->
+                <div class="panel chart-panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Temperature History</h3>
+                            <p>Guardian and host thermal state</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="temperatureChart"></canvas>
+                    </div>
+
+                </div>
+
+
+                <!-- COMMAND HISTORY -->
+                <div class="panel command-panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Remote Command History</h3>
+                            <p>Guardian-validated remote requests</p>
+                        </div>
+                    </div>
+
+                    <div id="commandHistory"></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DYNAMIC VIEW
+        ====================================================== -->
+        <section class="content" id="dynamicView" style="display:none;"></section>
+
+    </main>
+
+</div>
+
+
+<!-- =============================================================
+     MODAL
+============================================================= -->
+<div class="modal-overlay" id="modalOverlay">
+
+    <div class="modal">
+
+        <div class="modal-header">
+            <h3 id="modalTitle">Confirmation</h3>
+            <button id="modalClose">×</button>
+        </div>
+
+        <div class="modal-body" id="modalBody"></div>
+
+        <div class="modal-actions">
+            <button class="secondary-button" id="modalCancel">Cancel</button>
+            <button class="primary-button" id="modalConfirm">Confirm</button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="script.js?v=R11-CENTERED-BRANDING"></script>
+<script>
+    (function() {
+        var sidebar = document.querySelector('.sidebar');
+        var topbarBtn = document.getElementById('topbarSidebarToggle');
+
+        function setCollapsed(collapsed) {
+            if (!sidebar) return;
+            if (collapsed) {
+                sidebar.classList.add('collapsed');
+                localStorage.setItem('altis_sidebar_collapsed', '1');
+            } else {
+                sidebar.classList.remove('collapsed');
+                localStorage.setItem('altis_sidebar_collapsed', '0');
+            }
+        }
+
+        if (localStorage.getItem('altis_sidebar_collapsed') === '1') {
+            setCollapsed(true);
+        }
+
+        if (topbarBtn) {
+            topbarBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                setCollapsed(!sidebar.classList.contains('collapsed'));
+            });
+        }
+    })();
+</script>
+
+</body>
+</html>

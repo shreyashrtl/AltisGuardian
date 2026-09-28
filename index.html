@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AltisGuardian</title>
+    <meta name="description" content="Hardware supervision and electrical protection for mission-critical systems.">
+    <link rel="stylesheet" href="minimal.css?v=3">
+    <style>
+/* ==========================================================================
+   AltisGuardian — Swiss Typography & Modular Grid System
+   Strictly enforced rules:
+   - 0 gradients, 0 shadows, 0 drop-shadows, 0 glassmorphism
+   - 0 colored borders, 0 glowing effects, 0 multi-colored icons
+   - 0 on-hover motion animations, 0 bouncing elements
+   - 0 em dashes in copy
+   - Content container: max-w-5xl (64rem / 1024px)
+   - Monochrome base (#ffffff / #111111 / #555555) + electric blue (#0047ff)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+}
+
+:root {
+    --bg: #ffffff;
+    --text: #111111;
+    --muted: #555555;
+    --subtle: #8e8e8e;
+    --line: #e5e5e5;
+    --line-heavy: #111111;
+    --accent: #0047ff;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --max-w: 64rem; /* max-w-5xl */
+}
+
+html {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Structural Container (max-w-5xl) */
+.container {
+    width: 100%;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 2.5rem;
+}
+
+/* Header */
+.header {
+    padding: 2.75rem 0 2rem;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+body.nav-hidden .header,
+body.scrolled-small .header {
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
+}
+
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.brand-group {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.875rem;
+}
+
+.brand {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.brand-tag {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--subtle);
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.hide-nav-btn {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--subtle);
+    background: transparent;
+    border: 1px solid var(--line);
+    padding: 0.375rem 0.75rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.hide-nav-btn:hover {
+    color: var(--text);
+    border-color: var(--line-heavy);
+}
+
+.nav-link {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.nav-link:hover {
+    color: var(--accent);
+}
+
+.nav-link.active-console {
+    color: var(--text);
+    font-weight: 600;
+    border-bottom: 1px solid var(--line-heavy);
+    padding-bottom: 2px;
+}
+
+.nav-link.active-console:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+/* ==========================================================================
+   Small Side Navbar (Appears on Scroll or Hide Button)
+   ========================================================================== */
+
+.side-navbar {
+    position: fixed;
+    left: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 999;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    padding: 0.875rem 0.625rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+body.nav-hidden .side-navbar,
+body.scrolled-small .side-navbar {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.side-nav-brand {
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.side-nav-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.875rem;
+    list-style: none;
+}
+
+.side-nav-link {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--subtle);
+    text-decoration: none;
+    padding: 0.25rem 0.35rem;
+    transition: color 0.15s ease;
+}
+
+.side-nav-link:hover {
+    color: var(--accent);
+}
+
+.side-nav-toggle {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    background: transparent;
+    border: none;
+    border-top: 1px solid var(--line);
+    color: var(--subtle);
+    cursor: pointer;
+    padding-top: 0.625rem;
+    margin-top: 0.25rem;
+    width: 100%;
+    text-align: center;
+    transition: color 0.15s ease;
+}
+
+.side-nav-toggle:hover {
+    color: var(--text);
+}
+
+/* Hero Section */
+.hero {
+    padding: 7rem 0 6rem;
+}
+
+.hero-meta {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--subtle);
+    margin-bottom: 2rem;
+}
+
+.hero-title {
+    font-size: clamp(2.75rem, 6vw, 4.25rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.045em;
+    color: var(--text);
+    max-width: 48rem;
+    margin-bottom: 1.875rem;
+    text-wrap: balance;
+}
+
+.hero-copy {
+    font-size: 1.25rem;
+    line-height: 1.55;
+    letter-spacing: -0.015em;
+    color: var(--muted);
+    max-width: 38rem;
+    margin-bottom: 2.75rem;
+    text-wrap: pretty;
+}
+
+.hero-cta {
+    display: flex;
+    align-items: center;
+}
+
+/* Flat Swiss Button */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--text);
+    color: #ffffff;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    padding: 0.8125rem 1.625rem;
+    border: 1px solid var(--text);
+    border-radius: 0;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:hover {
+    background-color: transparent;
+    color: var(--text);
+    border-color: var(--text);
+}
+
+/* Work / Capabilities */
+.work {
+    padding: 5rem 0 7rem;
+    border-top: 1px solid var(--line);
+}
+
+.work-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 3.5rem;
+}
+
+.section-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--subtle);
+}
+
+.section-count {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--subtle);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4.5rem 5.5rem;
+}
+
+.grid-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.num {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--subtle);
+    margin-bottom: 0.875rem;
+}
+
+.grid-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    line-height: 1.25;
+}
+
+.grid-card p {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    color: var(--muted);
+}
+
+/* Footer */
+.footer {
+    margin-top: auto;
+    padding: 3rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.copyright {
+    font-size: 0.875rem;
+    color: var(--subtle);
+}
+
+.system-tag {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    color: var(--subtle);
+    text-transform: uppercase;
+}
+
+.footer-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.footer-links a {
+    font-size: 0.875rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.footer-links a:hover {
+    color: var(--text);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1.5rem;
+    }
+
+    .header {
+        padding: 2rem 0 1.5rem;
+    }
+
+    .hero {
+        padding: 4.5rem 0 3.5rem;
+    }
+
+    .work {
+        padding: 3.5rem 0 4.5rem;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .side-navbar {
+        display: none;
+    }
+
+    .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+    }
+
+    .footer-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+    </style>
+</head>
+<body>
+
+    <!-- Small Side Navbar (Active on scroll or hide button) -->
+    <aside id="sideNavbar" class="side-navbar" aria-label="Small side navigation">
+        <span class="side-nav-brand" title="AltisGuardian"></span>
+        <ul class="side-nav-links">
+            <li><a href="#" class="side-nav-link" title="Top">TOP</a></li>
+            <li><a href="#work-title" class="side-nav-link" title="Capabilities">CAPS</a></li>
+            <li><a href="dashboard.html" class="side-nav-link" title="Console">CON</a></li>
+        </ul>
+        <button id="restoreNavBtn" class="side-nav-toggle" title="Restore top navbar">▲ NAV</button>
+    </aside>
+
+    <!-- Top Header -->
+    <header class="header">
+        <div class="container header-inner">
+            <div class="brand-group">
+                <a href="index.html" class="brand">AltisGuardian</a>
+                <span class="brand-tag">System R4</span>
+            </div>
+            <nav class="nav" aria-label="Primary">
+                <button id="hideNavBtn" class="hide-nav-btn" type="button" title="Hide navbar into small side navbar">Hide Navbar</button>
+                <a href="api/health" class="nav-link" target="_blank" rel="noopener">Health</a>
+                <a href="dashboard.html" class="nav-link active-console">Console →</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 1. Hero -->
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-meta">Hardware Supervisor</div>
+            <h1 id="hero-title" class="hero-headline hero-title">Hardware supervision that cuts power before components burn.</h1>
+            <p class="hero-copy">AltisGuardian monitors electrical feeds in real time and automatically rejects commands that violate safe voltage, current, or thermal limits.</p>
+            <div class="hero-cta">
+                <a href="dashboard.html" class="btn">Open console →</a>
+            </div>
+        </section>
+
+        <!-- 2. Content / Work: 2-Column Grid -->
+        <section class="work" aria-labelledby="work-title">
+            <div class="work-header">
+                <h2 id="work-title" class="section-label">Capabilities</h2>
+                <span class="section-count">01 / 04</span>
+            </div>
+
+            <div class="grid">
+                <article class="grid-card">
+                    <span class="num">01 / SAFETY LIMITS</span>
+                    <h3>Hard limits for volts and amps</h3>
+                    <p>Set hard thresholds for voltage, current, and wattage. If a test rig draws too much power, the Guardian isolates the line instantly.</p>
+                </article>
+
+                <article class="grid-card">
+                    <span class="num">02 / SENSOR POLLING</span>
+                    <h3>Deterministic 30-second cycles</h3>
+                    <p>Reads Hall sensors, rail voltages, and case temperatures on a continuous loop without flooding communication pipes.</p>
+                </article>
+
+                <article class="grid-card">
+                    <span class="num">03 / CONFIGURATION</span>
+                    <h3>10,000 local PCB profiles</h3>
+                    <p>Calibrated power envelopes stored in local SQLite. Switch flight models and test bench configurations in one click.</p>
+                </article>
+
+                <article class="grid-card">
+                    <span class="num">04 / VERIFIABILITY</span>
+                    <h3>Audit trail for every command</h3>
+                    <p>Every mode change and blocked instruction is recorded to disk with the exact rejection reason.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <!-- 3. Footer -->
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <span class="copyright">© 2026 AltisGuardian</span>
+                <span class="system-tag">Node 22 · SQLite WAL</span>
+            </div>
+            <div class="footer-links">
+                <a href="dashboard.html">Console</a>
+                <a href="api/health" target="_blank" rel="noopener">Health</a>
+                <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            var manualHidden = false;
+            var hideBtn = document.getElementById('hideNavBtn');
+            var restoreBtn = document.getElementById('restoreNavBtn');
+
+            function handleScroll() {
+                if (manualHidden) return;
+                if (window.scrollY > 120) {
+                    document.body.classList.add('scrolled-small');
+                } else {
+                    document.body.classList.remove('scrolled-small');
+                }
+            }
+
+            window.addEventListener('scroll', handleScroll, { passive: true });
+
+            if (hideBtn) {
+                hideBtn.addEventListener('click', function() {
+                    manualHidden = true;
+                    document.body.classList.add('nav-hidden');
+                });
+            }
+
+            if (restoreBtn) {
+                restoreBtn.addEventListener('click', function() {
+                    manualHidden = false;
+                    document.body.classList.remove('nav-hidden');
+                    if (window.scrollY <= 120) {
+                        document.body.classList.remove('scrolled-small');
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

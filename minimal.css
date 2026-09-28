@@ -1,0 +1,473 @@
+/* ==========================================================================
+   AltisGuardian — Swiss Typography & Modular Grid System
+   Strictly enforced rules:
+   - 0 gradients, 0 shadows, 0 drop-shadows, 0 glassmorphism
+   - 0 colored borders, 0 glowing effects, 0 multi-colored icons
+   - 0 on-hover motion animations, 0 bouncing elements
+   - 0 em dashes in copy
+   - Content container: max-w-5xl (64rem / 1024px)
+   - Monochrome base (#ffffff / #111111 / #555555) + electric blue (#0047ff)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+}
+
+:root {
+    --bg: #ffffff;
+    --text: #111111;
+    --muted: #555555;
+    --subtle: #8e8e8e;
+    --line: #e5e5e5;
+    --line-heavy: #111111;
+    --accent: #0047ff;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --max-w: 64rem; /* max-w-5xl */
+}
+
+html {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================================================
+   Structural Container (max-w-5xl)
+   ========================================================================== */
+
+.container {
+    width: 100%;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 2.5rem;
+}
+
+/* ==========================================================================
+   Header: Understated Architectural Masthead
+   ========================================================================== */
+
+.header {
+    padding: 2.75rem 0 2rem;
+}
+
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.brand-group {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.875rem;
+}
+
+.brand {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.brand-tag {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--subtle);
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.hide-nav-btn {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--subtle);
+    background: transparent;
+    border: 1px solid var(--line);
+    padding: 0.375rem 0.75rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.hide-nav-btn:hover {
+    color: var(--text);
+    border-color: var(--line-heavy);
+}
+
+.nav-link {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.nav-link:hover {
+    color: var(--accent);
+}
+
+.nav-link.active-console {
+    color: var(--text);
+    font-weight: 600;
+    border-bottom: 1px solid var(--line-heavy);
+    padding-bottom: 2px;
+}
+
+.nav-link.active-console:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+/* Header hide transition */
+.header {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+body.nav-hidden .header,
+body.scrolled-small .header {
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   Small Side Navbar (Appears on Scroll or Hide Button)
+   ========================================================================== */
+
+.side-navbar {
+    position: fixed;
+    left: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 999;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    padding: 0.875rem 0.625rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+body.nav-hidden .side-navbar,
+body.scrolled-small .side-navbar {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.side-nav-brand {
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.side-nav-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.875rem;
+    list-style: none;
+}
+
+.side-nav-link {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--subtle);
+    text-decoration: none;
+    padding: 0.25rem 0.35rem;
+    transition: color 0.15s ease;
+}
+
+.side-nav-link:hover {
+    color: var(--accent);
+}
+
+.side-nav-toggle {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    background: transparent;
+    border: none;
+    border-top: 1px solid var(--line);
+    color: var(--subtle);
+    cursor: pointer;
+    padding-top: 0.625rem;
+    margin-top: 0.25rem;
+    width: 100%;
+    text-align: center;
+    transition: color 0.15s ease;
+}
+
+.side-nav-toggle:hover {
+    color: var(--text);
+}
+
+/* ==========================================================================
+   Hero Section: Content-First, High Whitespace
+   ========================================================================== */
+
+.hero {
+    padding: 7rem 0 6rem;
+}
+
+.hero-meta {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--subtle);
+    margin-bottom: 2rem;
+}
+
+.hero-title {
+    font-size: clamp(2.75rem, 6vw, 4.25rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.045em;
+    color: var(--text);
+    max-width: 48rem;
+    margin-bottom: 1.875rem;
+    text-wrap: balance;
+}
+
+.hero-copy {
+    font-size: 1.25rem;
+    line-height: 1.55;
+    letter-spacing: -0.015em;
+    color: var(--muted);
+    max-width: 38rem;
+    margin-bottom: 2.75rem;
+    text-wrap: pretty;
+}
+
+.hero-cta {
+    display: flex;
+    align-items: center;
+}
+
+/* Flat Swiss Button: Instantaneous inversion, zero motion, zero shadows */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--text);
+    color: #ffffff;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    padding: 0.8125rem 1.625rem;
+    border: 1px solid var(--text);
+    border-radius: 0;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:hover {
+    background-color: transparent;
+    color: var(--text);
+    border-color: var(--text);
+}
+
+/* ==========================================================================
+   Work / Capabilities: Structured 2-Column Grid
+   ========================================================================== */
+
+.work {
+    padding: 5rem 0 7rem;
+    border-top: 1px solid var(--line);
+}
+
+.work-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 3.5rem;
+}
+
+.section-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--subtle);
+}
+
+.section-count {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--subtle);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4.5rem 5.5rem;
+}
+
+.grid-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.num {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--subtle);
+    margin-bottom: 0.875rem;
+}
+
+.grid-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    line-height: 1.25;
+}
+
+.grid-card p {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    color: var(--muted);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.footer {
+    margin-top: auto;
+    padding: 3rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.copyright {
+    font-size: 0.875rem;
+    color: var(--subtle);
+}
+
+.system-tag {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    color: var(--subtle);
+    text-transform: uppercase;
+}
+
+.footer-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.footer-links a {
+    font-size: 0.875rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.footer-links a:hover {
+    color: var(--text);
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1.5rem;
+    }
+
+    .header {
+        padding: 2rem 0 1.5rem;
+    }
+
+    .hero {
+        padding: 4.5rem 0 3.5rem;
+    }
+
+    .work {
+        padding: 3.5rem 0 4.5rem;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+    }
+
+    .footer-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
