@@ -2,21 +2,32 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const { URL } = require('node:url');
-const { DatabaseSync } = require('node:sqlite');
 const crypto = require('node:crypto');
 
+const isVercel = !!process.env.VERCEL;
 const ROOT = __dirname;
-const DB_DIR = path.join(ROOT, 'data');
+const DB_DIR = isVercel ? path.join('/tmp', 'data') : path.join(ROOT, 'data');
 const DB_PATH = path.join(DB_DIR, 'pcb-profiles.sqlite');
 const PORT = Number(process.env.PORT || 3000);
 
+let DatabaseSync;
+try {
+    DatabaseSync = require('node:sqlite').DatabaseSync;
+} catch (e) {
+    console.warn('node:sqlite is not available on this Node runtime');
+}
+
 fs.mkdirSync(DB_DIR, { recursive: true });
 
-const db = new DatabaseSync(DB_PATH);
+const db = DatabaseSync ? new DatabaseSync(DB_PATH) : {
+    exec: () => {},
+    prepare: () => ({ run: () => {}, get: () => ({ count: 0 }), all: () => [] })
+};
 
 db.exec(`
     PRAGMA journal_mode = WAL;
     PRAGMA synchronous = NORMAL;
+
 
     CREATE TABLE IF NOT EXISTS pcb_profiles (
         profile_id TEXT PRIMARY KEY,
@@ -1189,7 +1200,11 @@ const server = http.createServer(async (req, res) => {
     }
 });
 
-server.listen(PORT, () => {
-    console.log(`AltisGuardian running at http://localhost:${PORT}`);
-    console.log(`PCB database: ${DB_PATH}`);
-});
+if (!process.env.VERCEL) {
+    server.listen(PORT, () => {
+        console.log(`AltisGuardian running at http://localhost:${PORT}`);
+        console.log(`PCB database: ${DB_PATH}`);
+    });
+}
+
+module.exports = server;

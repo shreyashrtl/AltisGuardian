@@ -3,8 +3,8 @@
   "version": "2.2.0",
   "private": true,
   "description": "AltisGuardian integrated high-altitude Guardian monitoring and control test build",
-  "main": "server.js",
   "scripts": {
+    "build": "echo 'Build complete'",
     "start": "node server.js"
   },
   "engines": {
